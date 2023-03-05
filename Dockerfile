@@ -1,24 +1,20 @@
-# Base image
+# Use the official Python image as a parent image
 FROM python:3.8-slim-buster
 
-# Set the working directory
+# Set the working directory to /app
 WORKDIR /app
 
-# Copy the app.py file to the working directory
-COPY app.py .
+# Copy the current directory contents into the container at /app
+COPY . /app
 
-# Install necessary packages
-RUN apt-get update && apt-get install -y \
-    libglib2.0-0 \
-    libsm6 \
-    libxext6 \
-    libxrender-dev \
- && rm -rf /var/lib/apt/lists/*
+# Install the required packages
+RUN pip3 install --no-cache-dir -r requirements.txt
 
-RUN pip install --no-cache-dir flask opencv-python-headless numpy
-
-# Expose port 5000 for the Flask app
+# Expose the port on which the application will run
 EXPOSE 5000
 
-# Set the entrypoint to run the Flask app
-ENTRYPOINT ["python", "app.py"]
+# Set the environment variable to specify the Flask app's entry point
+ENV FLASK_APP=run.py
+
+# Run the command to start the Flask app
+CMD ["flask", "run", "--host=0.0.0.0"]
